@@ -1,16 +1,22 @@
 'use client'
 import AuthStatus from "@/components/AuthStatus";
 import { getAccessToken } from "@/service/authService";
-import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
 
-export default function Home() {
+export default function Access() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { token, setToken, refreshToken, setRefreshToken, isError, setIsError } = useContext(AuthContext);
   const [code, setCode] = useState();
-  const [token, setToken] = useState();
-  const [refreshToken, setRefreshToken] = useState();
-  const [isError, setIsError] = useState(false);
   const [state, setState] = useState('');
+
+  useEffect(() => {
+    if (token) {
+      router.push('/home');
+    }
+  }, [token, router]);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -19,7 +25,7 @@ export default function Home() {
     } else {
       const randomState = Math.random().toString(36).substring(2, 15);
       setState(randomState);
-      window.location.href=`https://bling.com.br/Api/v3/oauth/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}&state=${randomState}`;
+      window.location.href = `https://bling.com.br/Api/v3/oauth/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}&state=${randomState}`;
     }
   }, [searchParams]);
 
@@ -39,7 +45,7 @@ export default function Home() {
           setIsError(true);
         });
     }
-  }, [code]);
+  }, [code, setToken, setRefreshToken, setIsError]);
 
   return (
     <div className="flex flex-col gap-8 items-center justify-center min-h-screen">
