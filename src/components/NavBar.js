@@ -21,7 +21,6 @@ export default function NavBar() {
         const token = localStorage.getItem('token');
         getUser(token)
             .then((data) => {
-                console.log(data);
                 setUser(data);
             })
             .catch((error) => {
@@ -34,14 +33,14 @@ export default function NavBar() {
             <div>
                 <h1 className="text-2xl font-black">PlanUp</h1>
             </div>
-            <div className="flex gap-4 align-middle">
+            <div className="flex gap-4 align-middle items-center ">
                 <Link href="/dashboard">
-                    <MdHomeFilled className="text-3xl" />
+                    <MdHomeFilled className="text-3xl align-middle items-center" />
                 </Link>
                 <Link href={`/products`}>
-                    <PiPackageFill className="text-3xl" />
+                    <PiPackageFill className="text-3xl align-middle items-center" />
                 </Link>
-                <div className="relative">
+                <div className="relative align-middle items-center">
                     <button onClick={toggleDropdown}>
                         <MdAccountCircle className="text-3xl" />
                     </button>

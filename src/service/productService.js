@@ -1,7 +1,7 @@
 'use server';
 import { blingApi } from "@/libs/blingApi";
 
-export async function getProducts(pagina, limite, token) {
+export async function getProducts(pagina, limite, token, sku) {
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
@@ -9,13 +9,14 @@ export async function getProducts(pagina, limite, token) {
     const params = {
         'pagina': pagina,
         'limite': limite,
+        'codigos[]': sku ? [sku] : undefined,
     }
 
     try {
         const response = await blingApi.get('/produtos', { headers, params })
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error("Erro ao buscar produtos:",error);
         throw error;
     }
 }
