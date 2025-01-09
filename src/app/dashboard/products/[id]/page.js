@@ -46,7 +46,8 @@ export default function ProductPage() {
             </div>
             <div className="flex justify-between align-middle my-2">
                 {imageUrl ? (<Image src={imageUrl} alt={product.nome} width={200} height={200} className='h-32 w-32 border-2 border-gray-300 rounded-lg' />) : (
-                    <div className="flex w-fit h-fit p-10 border-2 border-gray-300 rounded-lg align-middle items-center justify-center">
+                    <div className="flex w-fit h-fit p-10
+                     border-2 border-gray-300 rounded-lg align-middle items-center justify-center">
                         <FaMountainSun className="align-middle items-center justify-center" size={32} />
                     </div>
                 )}
