@@ -10,6 +10,7 @@ import { LiaPlusSolid } from "react-icons/lia";
 
 import LaunchModal from '@/components/LaunchModal';
 import StylezedBtn from '@/components/StylezedBtn';
+import { getEstoque } from '@/service/estoqueService';
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -18,6 +19,7 @@ export default function ProductPage() {
     const [product, setProduct] = useState(null);
     const [isLaunch, setIsLaunch] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+    const [estoque, setEstoque] = useState([]);
 
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
@@ -33,6 +35,17 @@ export default function ProductPage() {
             getProductById(id, token).then((data) => {
                 setProduct(data.data);
                 console.log(data.data);
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
+    }, [id, token]);
+
+    useEffect(() => {
+        if (token) {
+            getEstoque(id, token).then((data) => {
+                console.log(data.data[0]);
+                setEstoque(data.data[0]);
             }).catch((error) => {
                 console.error(error);
             });
@@ -123,7 +136,7 @@ export default function ProductPage() {
                     </div>
                 </div>
             </div>
-            <LaunchModal isOpen={isLaunch} onClose={() => setIsLaunch(false)}/>
+            <LaunchModal token={token} depositos={estoque.depositos} id={id} sku={product.codigo} isOpen={isLaunch} onClose={() => setIsLaunch(false) }/>
         </div>
     );
 }
