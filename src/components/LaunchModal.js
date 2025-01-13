@@ -89,6 +89,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
             }
 
             console.error('Erro ao atualizar estoque:', error);
+            console.error('Resposta:', error.response);
         }
     }
 
