@@ -136,7 +136,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
                     </div>) : launchType === 'E' ? (
                         <div>
                             <label className="text-sm">Quantidade</label>
-                            <input type="number" placeholder="0" className={`w-full p-2 mt-2 border  rounded-full " + ${isLaunchTypeEmpty ? 'border-red-500' : 'border-gray-300'}`} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+                            <input type="number" placeholder="0" className={`w-full p-2 mt-2 border  rounded-full " + ${isQuantityEmpty ? 'border-red-500' : 'border-gray-300'}`} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
 
                             <label className="text-sm">Preço de Custo</label>
                             <input type="number" placeholder="0,00" className="w-full p-2 mt-2 mb-4 border border-gray-300 rounded-full" value={cost} onChange={(e) => setCost(e.target.value)} />
@@ -147,7 +147,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
                     ) : (
                         <div>
                             <label className="text-sm">Quantidade</label>
-                            <input type="number" placeholder="0" className={`w-full p-2 mt-2 border  rounded-full " + ${isLaunchTypeEmpty ? 'border-red-500' : 'border-gray-300'}`} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+                            <input type="number" placeholder="0" className={`w-full p-2 mt-2 border  rounded-full " + ${isQuantityEmpty ? 'border-red-500' : 'border-gray-300'}`} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
 
                             <label className="text-sm">Preço de Venda</label>
                             <input type="number" placeholder="0,00" className="w-full p-2 mt-2 mb-4 border border-gray-300 rounded-full" value={price} onChange={(e) => setPrice(e.target.value)} />
