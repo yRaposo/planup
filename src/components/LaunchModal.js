@@ -18,6 +18,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
     const [isSkuEmpty, setIsSkuEmpty] = useState(false);
     const [isDepositoEmpty, setIsDepositoEmpty] = useState(false);
     const [isLaunchTypeEmpty, setIsLaunchTypeEmpty] = useState(false);
+    const [isQuantityEmpty, setIsQuantityEmpty] = useState(false);
 
     if (!isOpen) return null;
 
@@ -35,8 +36,10 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
         setIsIdEmpty(!id);
         setIsSkuEmpty(!sku);
         setIsDepositoEmpty(!deposito);
+        setIsQuantityEmpty(!quantity);
 
-        if (!id || !sku || !deposito || !launchType ) {
+
+        if (!id || !sku || !deposito || !launchType || launchType !== 'B' && !quantity) {
             setIsError(true);
             setErrorType('Preencha todos os campos obrigatórios para realizar o lançamento.');
             return;
@@ -63,6 +66,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
         try {
             const response = await postEstoque(data, token);
             console.log('Estoque atualizado com sucesso:', response);
+            setIsError(false);
             onClose();
         } catch (error) {
             setIsError(true);
@@ -130,7 +134,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
                     </div>) : launchType === 'E' ? (
                         <div>
                             <label className="text-sm">Quantidade</label>
-                            <input type="number" placeholder="0" className="w-full p-2 mt-2 mb-4 border border-gray-300 rounded-full" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+                            <input type="number" placeholder="0" className={`w-full p-2 mt-2 border  rounded-full " + ${isLaunchTypeEmpty ? 'border-red-500' : 'border-gray-300'}`} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
 
                             <label className="text-sm">Preço de Custo</label>
                             <input type="number" placeholder="0,00" className="w-full p-2 mt-2 mb-4 border border-gray-300 rounded-full" value={cost} onChange={(e) => setCost(e.target.value)} />
@@ -141,7 +145,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
                     ) : (
                         <div>
                             <label className="text-sm">Quantidade</label>
-                            <input type="number" placeholder="0" className="w-full p-2 mt-2 mb-4 border border-gray-300 rounded-full" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+                            <input type="number" placeholder="0" className={`w-full p-2 mt-2 border  rounded-full " + ${isLaunchTypeEmpty ? 'border-red-500' : 'border-gray-300'}`} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
 
                             <label className="text-sm">Preço de Venda</label>
                             <input type="number" placeholder="0,00" className="w-full p-2 mt-2 mb-4 border border-gray-300 rounded-full" value={price} onChange={(e) => setPrice(e.target.value)} />
