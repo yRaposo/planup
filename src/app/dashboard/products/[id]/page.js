@@ -12,13 +12,14 @@ import LaunchModal from '@/components/LaunchModal';
 import StylezedBtn from '@/components/StylezedBtn';
 import { getEstoque } from '@/service/estoqueService';
 import { AuthContext } from '@/context/AuthContext';
+import EditModal from '@/components/EditModal';
 
 export default function ProductPage() {
     const { id } = useParams();
     const router = useRouter();
     const { token, setToken } = useContext(AuthContext);
     const [product, setProduct] = useState(null);
-    const [isLaunch, setIsLaunch] = useState(false);
+    const [modal, setModal] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [estoque, setEstoque] = useState([]);
 
@@ -54,11 +55,11 @@ export default function ProductPage() {
         <div className="m-4">
             <div className='flex justify-between gap-4'>
                 <div className='hidden md:flex justify-between gap-4'>
-                    <StylezedBtn props={{ icon: <MdArrowBackIos />, text: 'Voltar' }} onClick={() => router.push('/dashboard')} />
+                    <StylezedBtn props={{ icon: <MdArrowBackIos />, text: 'Voltar' }} onClick={() => router.push('/dashboard/products')} />
                 </div>
                 <div className="flex justify-between w-full md:w-auto md:gap-4">
-                    {/* <StylezedBtn props={{ icon: <MdEdit />, text: 'Editar' }} onClick={() => setIsEdit(true)} /> */}
-                    <StylezedBtn props={{ icon: <LiaPlusSolid />, text: 'Lançamento' }} onClick={() => setIsLaunch(true)} />
+                    {/* <StylezedBtn props={{ icon: <MdEdit />, text: 'Editar' }} onClick={() => setModal('edit')} /> */}
+                    <StylezedBtn props={{ icon: <LiaPlusSolid />, text: 'Lançamento' }} onClick={() => setModal('launch')} />
                 </div>
             </div>
             <div className="my-4 flex flex-col justify-between align-middle border-gray-300 rounded-xl p-4 border-2">
@@ -128,7 +129,9 @@ export default function ProductPage() {
                     </div>
                 </div>
             </div>
-            <LaunchModal token={token} depositos={estoque.depositos} id={id} sku={product.codigo} isOpen={isLaunch} onClose={() => setIsLaunch(false) }/>
+            <LaunchModal token={token} depositos={estoque.depositos} id={id} sku={product.codigo} isOpen={modal === 'launch'} onClose={() => setModal('') }/>
+
+            <EditModal token={token} depositos={estoque.depositos} id={id} sku={product.codigo} isOpen={modal === 'edit'} onClose={() => setModal('') }/>
         </div>
     );
 }

@@ -1,4 +1,4 @@
-export default function Dashboard() {
+export function Profile() {
     return (
         <div className="m-10 flex justify-between align-middle">
             <div className="flex flex-col items-center aling-middle w-full">

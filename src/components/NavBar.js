@@ -39,7 +39,7 @@ export default function NavBar() {
                 <Link href="/dashboard">
                     <MdHomeFilled className="text-3xl align-middle items-center" />
                 </Link>
-                <Link href={`/products`}>
+                <Link href={`/dashboard/products`}>
                     <PiPackageFill className="text-3xl align-middle items-center" />
                 </Link>
                 <div className="relative align-middle items-center">

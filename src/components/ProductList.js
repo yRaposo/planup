@@ -33,7 +33,7 @@ export default function ProductList() {
     }, [token, page, sku]);
 
     const handleRowClick = (id) => {
-        router.push(`dashboard/products/${id}`);
+        router.push(`products/${id}`);
     }
 
     const handleInputChange = (event) => {
