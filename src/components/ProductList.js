@@ -27,7 +27,7 @@ export default function ProductList() {
                     }
                 })
                 .catch((error) => {
-                    console.error(error);
+                    console.error('Erro ao obter Produtos:',error);
                 });
         }
     }, [token, page, sku]);

@@ -2,15 +2,16 @@
 import Link from "next/link";
 import { MdHomeFilled, MdAccountCircle } from "react-icons/md";
 import { PiPackageFill } from "react-icons/pi";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getUser } from "@/service/userService";
 import { useRouter } from "next/navigation";
+import { AuthContext } from "@/context/AuthContext";
 
 
 export default function NavBar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [user, setUser] = useState([]);
-    const [token, setToken] = useState(null);
+    const { token } = useContext(AuthContext);
     const router = useRouter();
 
     const toggleDropdown = () => {
@@ -18,14 +19,15 @@ export default function NavBar() {
     }
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        getUser(token)
+        if (token) {
+            getUser(token)
             .then((data) => {
                 setUser(data);
             })
             .catch((error) => {
-                console.error(error);
+                console.error('Erro ao obter Usuario:', error);
             })
+        }
     }, [token]);
 
     return (

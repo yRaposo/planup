@@ -31,7 +31,7 @@ export async function getProductById(id, token) {
         const response = await blingApi.get(`/produtos/${id}`, { headers })
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error('Erro ao buscar produto por id',error);
         throw error;
     }
 }

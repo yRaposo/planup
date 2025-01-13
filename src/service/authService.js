@@ -19,7 +19,7 @@ export async function getAccessToken(code) {
         const response = await blingApi.post('/oauth/token', body, { headers })
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error('Erro ao obter o token de acesso', error);
         throw error;
     }
 }

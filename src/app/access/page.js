@@ -43,7 +43,7 @@ function AccessContent() {
           }
         })
         .catch((error) => {
-          console.error(error);
+          console.error('Erro ao obter Token',error);
           setIsError(true);
         });
     }

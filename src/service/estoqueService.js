@@ -15,7 +15,7 @@ export async function getEstoque(id, token) {
         const response = await blingApi.get('/estoques/saldos', { headers, params })
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error('Erro ao obter estoque',error);
         throw error;
     }
 }
@@ -36,7 +36,7 @@ export async function postEstoque(props, token) {
         const response = await blingApi.post('/estoques', data, { headers })
         return response.data;
     } catch (error) {
-        console.error(error.data);
+        console.error('Erro ao atualizar o estoque',error.response);
         throw error;
     }
 }

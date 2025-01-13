@@ -28,7 +28,7 @@ export default function ProductPage() {
                 setProduct(data.data);
                 console.log(data.data);
             }).catch((error) => {
-                console.error(error);
+                console.error('Erro ao obter o produto por id:', error);
             });
         }
     }, [id, token]);
@@ -39,7 +39,7 @@ export default function ProductPage() {
                 console.log(data.data[0]);
                 setEstoque(data.data[0]);
             }).catch((error) => {
-                console.error(error);
+                console.error('Erro ao obter estoques:', error);
             });
         }
     }, [id, token]);
