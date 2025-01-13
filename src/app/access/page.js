@@ -4,7 +4,7 @@ import { getAccessToken } from "@/service/authService";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
-import { blingApi } from "@/libs/blingApi";
+import SuspenseWrapper from "@/components/SuspenseWrapper";
 
 export default function Access() {
   const searchParams = useSearchParams();
@@ -50,11 +50,13 @@ export default function Access() {
   }, [code, setToken, setRefreshToken, setIsError]);
 
   return (
-    <div className="flex flex-col gap-8 items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold">
-        Plan Up
-      </h1>
-      <AuthStatus isError={isError} token={token} code={code} />
-    </div>
+    <SuspenseWrapper>
+      <div className="flex flex-col gap-8 items-center justify-center min-h-screen">
+        <h1 className="text-4xl font-bold">
+          Plan Up
+        </h1>
+        <AuthStatus isError={isError} token={token} code={code} />
+      </div>
+    </SuspenseWrapper>
   );
 }
