@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { getUser } from "@/service/userService";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/context/AuthContext";
+import Image from "next/image";
 
 
 export default function NavBar() {
@@ -32,7 +33,8 @@ export default function NavBar() {
 
     return (
         <div className="bg-white text-gray-800 m-4 p-4 rounded-2xl border-2 border-gray-300 flex justify-between align-middle">
-            <div>
+            <div className="flex gap-4 align-middle items-center">
+                <Image src="U.svg" alt="PlanUp" width={30} height={30} className="object-cover" />
                 <h1 className="text-2xl font-black">PlanUp</h1>
             </div>
             <div className="flex gap-4 align-middle items-center ">
