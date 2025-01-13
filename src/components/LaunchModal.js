@@ -18,9 +18,6 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
     const [isSkuEmpty, setIsSkuEmpty] = useState(false);
     const [isDepositoEmpty, setIsDepositoEmpty] = useState(false);
     const [isLaunchTypeEmpty, setIsLaunchTypeEmpty] = useState(false);
-    const [isPriceEmpty, setIsPriceEmpty] = useState(false);
-    const [isCostEmpty, setIsCostEmpty] = useState(false);
-    const [isQuantityEmpty, setIsQuantityEmpty] = useState(false);
 
     if (!isOpen) return null;
 
@@ -96,7 +93,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
     }
 
     return (
-        <div className="fixed overflow-y-auto inset-0 flex items-center justify-center bg-black bg-opacity-50 h-full w-full">
+        <div className="fixed overflow-y-auto inset-0 flex items-center justify-center bg-black bg-opacity-50 h-full w-full md:pt-60">
             <div className="bg-white p-5 w-full m-5 md:m-52 rounded-xl shadow-lg">
                 <div>
                     <h1 className="text-2xl font-bold mt-2">Novo Lançamento</h1>

@@ -1,26 +1,20 @@
 'use client'
 import { getProducts } from "@/service/productService";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { MdFilterAlt, MdOutlineClear } from "react-icons/md";
 import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
 import { truncateText } from "@/utils/truncateText";
 import { useRouter } from "next/navigation";
+import { AuthContext } from "@/context/AuthContext";
 
 export default function ProductList() {
     const [products, setProducts] = useState([]);
-    const [token, setToken] = useState(null);
+    const { token } = useContext(AuthContext);
     const [page, setPage] = useState(1);
     const [sku, setSku] = useState('');
     const [isInputActive, setIsInputActive] = useState(false);
     const [isempty, setIsEmpty] = useState(true);
     const router = useRouter();
-
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        if (storedToken) {
-            setToken(storedToken);
-        }
-    }, []);
 
     useEffect(() => {
         if (token) {
@@ -67,13 +61,13 @@ export default function ProductList() {
             <div className="flex w-full gap-5">
                 <div className={`flex border-2 border-gray-300 rounded-3xl p-2 w-full mt-5 justify-around ${isInputActive ? 'border-gray-800' : 'border-gray-300'}`}>
                     <input type="text" className="w-full outline-none" placeholder="Digite o SKU do produto" value={sku} onChange={handleInputChange} onFocus={handleInputFocus}
-                        onBlur={handleInputBlur}/>
+                        onBlur={handleInputBlur} />
                     {isempty ? null : (
                         <button className="text-white rounded-xl align-middle items-center" onClick={() => {
                             setSku('');
                             setIsEmpty(true);
                         }}>
-                            <MdOutlineClear  color="#000" size="20" />
+                            <MdOutlineClear color="#000" size="20" />
                         </button>
                     )}
                 </div>

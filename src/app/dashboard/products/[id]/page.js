@@ -2,7 +2,7 @@
 import { getProductById } from '@/service/productService';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaMountainSun } from "react-icons/fa6";
 import { MdArrowBackIos, MdEdit } from "react-icons/md";
@@ -11,24 +11,16 @@ import { LiaPlusSolid } from "react-icons/lia";
 import LaunchModal from '@/components/LaunchModal';
 import StylezedBtn from '@/components/StylezedBtn';
 import { getEstoque } from '@/service/estoqueService';
+import { AuthContext } from '@/context/AuthContext';
 
 export default function ProductPage() {
     const { id } = useParams();
     const router = useRouter();
-    const [token, setToken] = useState(null);
+    const { token, setToken } = useContext(AuthContext);
     const [product, setProduct] = useState(null);
     const [isLaunch, setIsLaunch] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [estoque, setEstoque] = useState([]);
-
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        if (storedToken) {
-            setToken(storedToken);
-        } else {
-            router.push('/access');
-        }
-    }, [router]);
 
     useEffect(() => {
         if (token) {
