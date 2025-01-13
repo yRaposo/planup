@@ -24,11 +24,13 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
 
     const handleLaunchTypeChange = (event) => {
         setLaunchType(event.target.value);
+        setIsError(false);
     };
 
     const handleDepositoChange = (event) => {
         console.log(event.target.value);
         setDeposito(event.target.value);
+        setIsError(false);
     };
 
     const handleSubmit = async () => {
