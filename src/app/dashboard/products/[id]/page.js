@@ -45,7 +45,7 @@ export default function ProductPage() {
     }, [id, token]);
 
     if (!product) {
-        return <div>Loading...</div>;
+        return (<div>Loading...</div>);
     }
 
     const imageUrl = product.midia?.imagens?.internas?.[0]?.link;
