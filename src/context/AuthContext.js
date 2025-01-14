@@ -8,13 +8,23 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
     const [token, setToken] = useState(null);
     const [refreshToken, setRefreshToken] = useState(null);
+    const [accounts, setAccounts] = useState([]);
     const [isError, setIsError] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
+        const storedRefreshToken = localStorage.getItem('refreshToken');
+        const storedAccounts = localStorage.getItem('accounts');
+
         if (storedToken) {
             setToken(storedToken);
+        }
+        if (storedRefreshToken) {
+            setRefreshToken(storedRefreshToken);
+        }
+        if (storedAccounts.length > 0) {
+            setAccounts(storedAccounts);
         }
     }, []);
 
@@ -25,6 +35,30 @@ export function AuthProvider({ children }) {
             localStorage.removeItem('token');
         }
     }, [token, router]);
+
+    useEffect(() => {
+        if (refreshToken) {
+            localStorage.setItem('refreshToken', refreshToken);
+        } else {
+            localStorage.removeItem('refreshToken');
+        }
+    }, [refreshToken]);
+
+    useEffect(() => {
+        if (accounts.length > 0) {
+            localStorage.setItem('accounts', JSON.stringify(accounts));
+        } else {
+            localStorage.removeItem('accounts');
+        }
+    }, [accounts]);
+
+    const addAccount = (token, refresh_token, email) => {
+        setAccounts(prevAcconts => [...prevAcconts, { token, refresh_token, email }]);
+    }
+
+    const removeAccount = (token) => {
+        setAccounts(prevAcconts => prevAcconts.filter(account => account.token !== token))
+    }
 
     useEffect(() => {
         const checkTokenValidity = async () => {

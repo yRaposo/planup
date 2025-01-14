@@ -16,5 +16,5 @@ export default function Home() {
         }
     }, [token, router]);
 
-    return (null)
+    return (null);
 }
