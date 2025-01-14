@@ -134,7 +134,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
                         <option value="S">Saída</option>
                     </select>
 
-                    <label className="text-sm">Depoisito</label>
+                    <label className="text-sm">Deposito</label>
                     <select value={deposito} onChange={handleDepositoChange} className={`w-full p-2 mt-2 border  rounded-full " + ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
                         <option value="" disabled hidden>Selecione um depósito</option>
                         {depositosData.map((dep) => (
