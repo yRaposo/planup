@@ -58,7 +58,7 @@ export default function ProductPage() {
                     <StylezedBtn props={{ icon: <MdArrowBackIos />, text: 'Voltar' }} onClick={() => router.push('/dashboard/products')} />
                 </div>
                 <div className="flex justify-between w-full md:w-auto md:gap-4">
-                    {/* <StylezedBtn props={{ icon: <MdEdit />, text: 'Editar' }} onClick={() => setModal('edit')} /> */}
+                    <StylezedBtn props={{ icon: <MdEdit />, text: 'Editar' }} onClick={() => setModal('edit')} />
                     <StylezedBtn props={{ icon: <LiaPlusSolid />, text: 'Lançamento' }} onClick={() => setModal('launch')} />
                 </div>
             </div>

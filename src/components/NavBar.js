@@ -22,12 +22,12 @@ export default function NavBar() {
     useEffect(() => {
         if (token) {
             getUser(token)
-            .then((data) => {
-                setUser(data);
-            })
-            .catch((error) => {
-                console.error('Erro ao obter Usuario:', error);
-            })
+                .then((data) => {
+                    setUser(data);
+                })
+                .catch((error) => {
+                    console.error('Erro ao obter Usuario:', error);
+                })
         }
     }, [token]);
 
@@ -59,7 +59,7 @@ export default function NavBar() {
                                 </div>
 
                             </div>
-                            <Link href="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                            <Link href="/dashboard/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                                 Gerenciar Perfis
                             </Link>
                         </div>

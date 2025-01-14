@@ -5,6 +5,7 @@ import { useState } from "react";
 import { postEstoque } from "@/service/estoqueService";
 import { useEffect } from "react";
 import { getDepositoById } from "@/service/depositoService";
+import OnDev from "./OnDev";
 
 export default function EditModal({ isOpen, onClose, id, sku, token, depositos }) {
     const [launchType, setLaunchType] = useState('B');
@@ -112,6 +113,7 @@ export default function EditModal({ isOpen, onClose, id, sku, token, depositos }
                 </div>
 
                 <div className="mt-4">
+                    <OnDev />
                     {/* {launchType === 'B' ? (<div>
                         <label className="text-sm">Quantidade</label>
                         <input type="number" placeholder="0" className="w-full p-2 mt-2 mb-4 border border-gray-300 rounded-full" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
@@ -151,7 +153,7 @@ export default function EditModal({ isOpen, onClose, id, sku, token, depositos }
 
                 <div className="flex justify-between mt-4">
                     <StylezedBtn props={{ icon: <MdClose />, text: 'Cancelar' }} onClick={onClose} />
-                    <StylezedBtn props={{ icon: <MdLaunch />, text: 'Salvar' }} onClick={() => handleSubmit()} />
+                    {/* <StylezedBtn props={{ icon: <MdLaunch />, text: 'Salvar' }} onClick={() => handleSubmit()} /> */}
                 </div>
 
                 <div className="mt-4">
