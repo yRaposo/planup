@@ -20,7 +20,6 @@ export default function ProductPage() {
     const { token, setToken } = useContext(AuthContext);
     const [product, setProduct] = useState(null);
     const [modal, setModal] = useState('');
-    const [isEdit, setIsEdit] = useState(false);
     const [estoque, setEstoque] = useState([]);
 
     useEffect(() => {
