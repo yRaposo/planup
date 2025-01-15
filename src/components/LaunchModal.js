@@ -6,6 +6,7 @@ import { postEstoque } from "@/service/estoqueService";
 import { useEffect } from "react";
 import { getDepositoById } from "@/service/depositoService";
 import { CgSpinner } from "react-icons/cg";
+import { getDepositoByIdQ } from "@/utils/requestQueue";
 
 export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos }) {
     const [launchType, setLaunchType] = useState('B');
@@ -29,7 +30,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
         const fetchDepositosData = async () => {
             if (token && Array.isArray(depositos)) {
                 const data = await Promise.all(depositos.map(async (dep) => {
-                    return await getDepositoById(dep.id, token);
+                    return await getDepositoByIdQ(dep.id, token);
                 }));
                 setDepositosData(data);
             }
@@ -128,14 +129,14 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
                 <div>
                     <h1 className="text-2xl font-bold mt-2">Novo Lançamento</h1>
                     <label className="text-sm">Tipo de Lançamento</label>
-                    <select value={launchType} onChange={handleLaunchTypeChange} className={`w-full p-2 mt-2 border  rounded-full " + ${isLaunchTypeEmpty ? 'border-red-800' : 'border-gray-300'}`}>
+                    <select value={launchType} onChange={handleLaunchTypeChange} className={`w-full p-2 mt-2 border  rounded-full appearance-none" + ${isLaunchTypeEmpty ? 'border-red-800' : 'border-gray-300'}`}>
                         <option value="E">Entrada</option>
                         <option value="B" selected>Balanço</option>
                         <option value="S">Saída</option>
                     </select>
 
                     <label className="text-sm">Deposito</label>
-                    <select value={deposito} onChange={handleDepositoChange} className={`w-full p-2 mt-2 border  rounded-full " + ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
+                    <select value={deposito} onChange={handleDepositoChange} className={`w-full p-2 mt-2 border  rounded-full appearance-none" + ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
                         <option value="" disabled hidden>Selecione um depósito</option>
                         {depositosData.map((dep) => (
                             <option key={dep.data.id} value={dep.data.id}>{dep.data.descricao}</option>
