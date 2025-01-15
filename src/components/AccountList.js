@@ -20,7 +20,7 @@ export default function AccountList() {
 
             <AccountBtn token={token} isPrimary />
 
-            <Link href="" className=" flex flex-row border-2 border-gray-300 rounded-xl p-4 w-full border-dashed justify-start gap-4 align-middle items-center hover:bg-gray-100">
+            <Link href="/addAccount" className=" flex flex-row border-2 border-gray-300 rounded-xl p-4 w-full border-dashed justify-start gap-4 align-middle items-center hover:bg-gray-100">
                 <div>
                     <CiCirclePlus size={30} />
                 </div>

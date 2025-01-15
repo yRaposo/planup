@@ -31,6 +31,7 @@ function AccessContent() {
   }, [searchParams]);
 
   useEffect(() => {
+    setIsError(false);
     if (code) {
       getAccessToken(code)
         .then((data) => {
@@ -38,8 +39,6 @@ function AccessContent() {
             setToken(data.access_token);
             setRefreshToken(data.refresh_token);
             setIsError(false);
-          } else {
-            setIsError(true);
           }
         })
         .catch((error) => {
