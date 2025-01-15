@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MdAccountCircle } from "react-icons/md";
 
-export default function AccountBtn({ token, email, isPrimary }) {
+export default function AccountBtn({ token, email, isPrimary, onClick }) {
 
     const [user, setUser] = useState([]);
 
@@ -22,8 +22,8 @@ export default function AccountBtn({ token, email, isPrimary }) {
     }, [token]);
 
     return (
-        <div>
-            <Link href="" className=" flex flex-col border-2 border-gray-300 rounded-xl p-4 w-full  gap-4 align-middle items-center hover:bg-gray-100 md:justify-between md:flex-row relative">
+        <>
+            <button className=" flex flex-col border-2 border-gray-300 rounded-xl p-4 w-full  gap-4 align-middle items-center hover:bg-gray-100 md:justify-between md:flex-row relative" onClick={onClick}>
                 <div className="flex flex-col md:flex-row gap-4 align-middle items-center">
                     <div>
                         <MdAccountCircle className=" text-8xl md:text-3xl" />
@@ -52,7 +52,7 @@ export default function AccountBtn({ token, email, isPrimary }) {
 
                     )}
                 </div>
-            </Link>
-        </div>
+            </button>
+        </>
     );
 }

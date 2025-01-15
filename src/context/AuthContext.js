@@ -66,7 +66,26 @@ export function AuthProvider({ children }) {
     }
 
     const removeAccount = (token) => {
-        setAccounts(prevAccounts => prevAccounts.filter(account => account.token !== token));
+        setAccounts(prevAccounts => {
+            const updatedAccounts = prevAccounts.filter(account => account.token !== token);
+            if (prevAccounts.length > 0 && prevAccounts[0].token === token) {
+                // Se a conta principal está sendo removida, substitua pela próxima conta
+                if (updatedAccounts.length > 0) {
+                    const nextAccount = updatedAccounts[0];
+                    setToken(nextAccount.token);
+                    setRefreshToken(nextAccount.refresh_token);
+                } else {
+                    setToken(null);
+                    setRefreshToken(null);
+                }
+            }
+            return updatedAccounts;
+        });
+    }
+
+    const setAsPrimaryAccount = (token, refresh_token) => {
+        setToken(token);
+        setRefreshToken(refresh_token);
     }
 
     useEffect(() => {
@@ -95,7 +114,7 @@ export function AuthProvider({ children }) {
     }, [token]);
 
     return (
-        <AuthContext.Provider value={{ token, setToken, refreshToken, setRefreshToken, accounts, setAccounts, isError, setIsError, addAccount, removeAccount }}>
+        <AuthContext.Provider value={{ token, setToken, refreshToken, setRefreshToken, accounts, setAccounts, isError, setIsError, addAccount, removeAccount, setAsPrimaryAccount }}>
             {children}
         </AuthContext.Provider>
     );
