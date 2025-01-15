@@ -22,6 +22,7 @@ function AccessContent() {
       if (!token) {
         setToken(newToken);
         setRefreshToken(newRefreshToken);
+        addAccount(newToken, newRefreshToken, userEmail);
         router.push('/dashboard');
       } else {
         addAccount(newToken, newRefreshToken, userEmail);
