@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
         if (storedRefreshToken) {
             setRefreshToken(storedRefreshToken);
         }
-        if (storedAccounts.length > 0) {
+        if (storedAccounts?.length > 0) {
             setAccounts(storedAccounts);
         }
     }, []);
@@ -76,6 +76,9 @@ export function AuthProvider({ children }) {
                     setToken(null);
                     router.push('/access');
                 }
+            } else {
+                setIsError(true);
+                router.push('/access');
             }
         };
 

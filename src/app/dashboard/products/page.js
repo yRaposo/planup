@@ -1,21 +1,13 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProductList from "@/components/ProductList";
+import { AuthContext } from "@/context/AuthContext";
 
 export default function Products() {
-    const [token, setToken] = useState(null)
+    const { token } = useContext(AuthContext);
     const router = useRouter();
-
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        if (storedToken) {
-            setToken(storedToken);
-        } else {
-            router.push('/access');
-        }
-    }, [router]);
 
     return (
         <div className="m-4 flex justify-between align-middle">

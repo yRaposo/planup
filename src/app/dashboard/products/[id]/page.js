@@ -17,7 +17,7 @@ import EditModal from '@/components/EditModal';
 export default function ProductPage() {
     const { id } = useParams();
     const router = useRouter();
-    const { token, setToken } = useContext(AuthContext);
+    const { token } = useContext(AuthContext);
     const [product, setProduct] = useState(null);
     const [modal, setModal] = useState('');
     const [estoque, setEstoque] = useState([]);
