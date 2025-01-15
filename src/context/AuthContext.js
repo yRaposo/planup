@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
             setRefreshToken(storedRefreshToken);
         }
         if (storedAccounts?.length > 0) {
-            setAccounts(storedAccounts);
+            setAccounts(JSON.parse(storedAccounts));
         }
     }, []);
 
@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
         } else {
             localStorage.removeItem('token');
         }
-    }, [token, router]);
+    }, [token]);
 
     useEffect(() => {
         if (refreshToken) {
@@ -53,11 +53,20 @@ export function AuthProvider({ children }) {
     }, [accounts]);
 
     const addAccount = (token, refresh_token, email) => {
-        setAccounts(prevAcconts => [...prevAcconts, { token, refresh_token, email }]);
+        setAccounts(prevAccounts => {
+            const accountIndex = prevAccounts.findIndex(account => account.email === email);
+            if (accountIndex !== -1) {
+                const updatedAccounts = [...prevAccounts];
+                updatedAccounts[accountIndex] = { token, refresh_token, email };
+                return updatedAccounts;
+            } else {
+                return [...prevAccounts, { token, refresh_token, email }];
+            }
+        });
     }
 
     const removeAccount = (token) => {
-        setAccounts(prevAcconts => prevAcconts.filter(account => account.token !== token))
+        setAccounts(prevAccounts => prevAccounts.filter(account => account.token !== token));
     }
 
     useEffect(() => {
@@ -83,10 +92,10 @@ export function AuthProvider({ children }) {
         };
 
         checkTokenValidity();
-    }, [token, router]);
+    }, [token]);
 
     return (
-        <AuthContext.Provider value={{ token, setToken, refreshToken, setRefreshToken, isError, setIsError }}>
+        <AuthContext.Provider value={{ token, setToken, refreshToken, setRefreshToken, isError, setIsError, addAccount, removeAccount }}>
             {children}
         </AuthContext.Provider>
     );
