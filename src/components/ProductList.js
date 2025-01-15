@@ -6,6 +6,7 @@ import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
 import { truncateText } from "@/utils/truncateText";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/context/AuthContext";
+import { getProductsQ } from "@/utils/requestQueue";
 
 export default function ProductList() {
     const [products, setProducts] = useState([]);
@@ -18,7 +19,7 @@ export default function ProductList() {
 
     useEffect(() => {
         if (token) {
-            getProducts(page, 100, token, sku)
+            getProductsQ(page, 100, token, sku)
                 .then((result) => {
                     if (Array.isArray(result.data)) {
                         setProducts(result.data);

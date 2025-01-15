@@ -7,6 +7,7 @@ import { getUser } from "@/service/userService";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/context/AuthContext";
 import Image from "next/image";
+import { getUserQ } from "@/utils/requestQueue";
 
 
 export default function NavBar() {
@@ -21,7 +22,7 @@ export default function NavBar() {
 
     useEffect(() => {
         if (token) {
-            getUser(token)
+            getUserQ(token)
                 .then((data) => {
                     setUser(data);
                 })

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useContext, Suspense } from "react";
 import { AuthContext } from "@/context/AuthContext";
 import SuspenseWrapper from "@/components/SuspenseWrapper";
-import { getUser } from "@/service/userService";
+import { getUserQ } from "@/utils/requestQueue";
 
 function AccessContent() {
   const searchParams = useSearchParams();
@@ -33,7 +33,7 @@ function AccessContent() {
 
   useEffect(() => {
     if (newToken) {
-      getUser(newToken)
+      getUserQ(newToken)
         .then((data) => {
           setUserEmail(data.data.email);
         })

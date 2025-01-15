@@ -1,5 +1,5 @@
 'use client'
-import { getUser } from "@/service/userService";
+import { getUserQ } from "@/utils/requestQueue";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MdAccountCircle } from "react-icons/md";
@@ -10,7 +10,7 @@ export default function AccountBtn({ token, email, isPrimary, onClick }) {
 
     useEffect(() => {
         if (token) {
-            getUser(token)
+            getUserQ(token)
                 .then((data) => {
                     setUser(data.data);
                     console.log(data);

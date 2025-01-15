@@ -6,6 +6,7 @@ import { postEstoque } from "@/service/estoqueService";
 import { useEffect } from "react";
 import { getDepositoById } from "@/service/depositoService";
 import { CgSpinner } from "react-icons/cg";
+import { getDepositoByIdQ } from "@/utils/requestQueue";
 
 export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos }) {
     const [launchType, setLaunchType] = useState('B');
@@ -29,7 +30,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
         const fetchDepositosData = async () => {
             if (token && Array.isArray(depositos)) {
                 const data = await Promise.all(depositos.map(async (dep) => {
-                    return await getDepositoById(dep.id, token);
+                    return await getDepositoByIdQ(dep.id, token);
                 }));
                 setDepositosData(data);
             }

@@ -3,8 +3,8 @@ import { MdAccountCircle, MdClose } from 'react-icons/md';
 import { BsArrowUpRightCircleFill } from "react-icons/bs";
 import { IoMdExit } from "react-icons/io";
 import StylezedBtn from './StylezedBtn';
-import { getUser } from "@/service/userService";
 import { AuthContext } from '@/context/AuthContext';
+import { getUserQ } from '@/utils/requestQueue';
 
 const AccountModal = ({ isOpen, onClose, account, isPrimary }) => {
     const [user, setUser] = useState(null);
@@ -14,7 +14,7 @@ const AccountModal = ({ isOpen, onClose, account, isPrimary }) => {
     useEffect(() => {
         if (account) {
             setLoading(true);
-            getUser(account.token)
+            getUserQ(account.token)
                 .then((data) => {
                     setUser(data.data);
                     setLoading(false);

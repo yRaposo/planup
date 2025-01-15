@@ -1,5 +1,4 @@
 'use client'
-import { getProductById } from '@/service/productService';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
@@ -10,9 +9,9 @@ import { LiaPlusSolid } from "react-icons/lia";
 
 import LaunchModal from '@/components/LaunchModal';
 import StylezedBtn from '@/components/StylezedBtn';
-import { getEstoque } from '@/service/estoqueService';
 import { AuthContext } from '@/context/AuthContext';
 import EditModal from '@/components/EditModal';
+import { getEstoqueQ, getProductByIdQ } from '@/utils/requestQueue';
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -24,7 +23,7 @@ export default function ProductPage() {
 
     useEffect(() => {
         if (token) {
-            getProductById(id, token).then((data) => {
+            getProductByIdQ(id, token).then((data) => {
                 setProduct(data.data);
                 console.log(data.data);
             }).catch((error) => {
@@ -35,7 +34,7 @@ export default function ProductPage() {
 
     useEffect(() => {
         if (token) {
-            getEstoque(id, token).then((data) => {
+            getEstoqueQ(id, token).then((data) => {
                 console.log(data.data[0]);
                 setEstoque(data.data[0]);
             }).catch((error) => {

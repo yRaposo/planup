@@ -4,8 +4,8 @@ import { CiCirclePlus } from "react-icons/ci";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthContext";
 import AccountBtn from "@/components/AccountBtn";
-import { getUser } from "@/service/userService";
 import AccountModal from "./AccountModal";
+import { getUserQ } from "@/utils/requestQueue";
 
 export default function AccountList() {
 
@@ -16,7 +16,7 @@ export default function AccountList() {
 
     useEffect(() => {
         if (token) {
-            getUser(token)
+            getUserQ(token)
                 .then((data) => {
                     setUser(data.data);
                 })
