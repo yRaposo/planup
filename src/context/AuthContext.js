@@ -69,9 +69,10 @@ export function AuthProvider({ children }) {
         setAccounts(prevAccounts => {
             const updatedAccounts = prevAccounts.filter(account => account.token !== token);
             if (prevAccounts.length > 0 && prevAccounts[0].token === token) {
-                // Se a conta principal está sendo removida, substitua pela próxima conta
+                // Se a conta principal está sendo removida, substitua pelos dados de qualquer outra conta
                 if (updatedAccounts.length > 0) {
-                    const nextAccount = updatedAccounts[0];
+                    const randomIndex = Math.floor(Math.random() * updatedAccounts.length);
+                    const nextAccount = updatedAccounts[randomIndex];
                     setToken(nextAccount.token);
                     setRefreshToken(nextAccount.refresh_token);
                 } else {
