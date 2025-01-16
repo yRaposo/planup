@@ -20,32 +20,9 @@ export default function ProductPage() {
     const { token, accounts } = useContext(AuthContext);
     const [product, setProduct] = useState(null);
     const [allProducts, setAllProducts] = useState([]);
-    const [users, setUsers] = useState([]);
     const [modal, setModal] = useState('');
     const [estoque, setEstoque] = useState([]);
     const [productAccounts, setProductAccounts] = useState({});
-
-    useEffect(() => {
-        if (accounts) {
-            const fetchUsers = async () => {
-                const usersData = [];
-                for (const account of accounts) {
-                    if (account.token) {
-                        try {
-                            const data = await getUserQ(account.token);
-                            usersData.push(data.data);
-                            console.log(data.data);
-                        } catch (error) {
-                            console.error('Erro ao obter usuarios:', error);
-                        }
-                    }
-                }
-                setUsers(usersData);
-            };
-
-            fetchUsers();
-        }
-    }, [accounts]);
 
     useEffect(() => {
         if (token) {
@@ -68,7 +45,7 @@ export default function ProductPage() {
                         try {
                             const data = await getProductsQ(1, 1, account.token, product.codigo);
                             const newProducts = data.data.filter(newProduct =>
-                                !productsData.some(existingProduct => existingProduct.codigo === newProduct.codigo)
+                                !productsData.some(existingProduct => existingProduct.nome === newProduct.nome)
                             );
                             productsData.push(...newProducts);
 
