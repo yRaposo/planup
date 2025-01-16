@@ -104,14 +104,11 @@ export function AuthProvider({ children }) {
                     setToken(null);
                     router.push('/access');
                 }
-            } else {
-                setIsError(true);
-                router.push('/access');
             }
         };
 
         checkTokenValidity();
-    }, [token]);
+    }, [token, router]);
 
     return (
         <AuthContext.Provider value={{ token, setToken, refreshToken, setRefreshToken, accounts, setAccounts, isError, setIsError, addAccount, removeAccount, setAsPrimaryAccount }}>

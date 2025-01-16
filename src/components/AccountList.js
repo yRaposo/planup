@@ -14,20 +14,9 @@ export default function AccountList() {
     const [modal, setModal] = useState('');
     const [selectedAccount, setSelectedAccount] = useState({});
 
-    useEffect(() => {
-        if (token) {
-            getUserQ(token)
-                .then((data) => {
-                    setUser(data.data);
-                })
-                .catch((error) => {
-                    console.error('Erro ao obter Usuario:', error);
-                })
-        }
-    }, [token]);
 
     const isPrimary = (account) => {
-        if (user.email === account.email) {
+        if (token === account.token) {
             return true;
         } else {
             return false;

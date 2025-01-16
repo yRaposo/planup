@@ -17,7 +17,7 @@ export default function AccountBtn({ token, email, isPrimary, onClick }) {
                 })
                 .catch((error) => {
                     console.error('Erro ao obter Contas:', error);
-                })
+                });
         }
     }, [token]);
 

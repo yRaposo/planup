@@ -51,18 +51,26 @@ export default function NavBar() {
                     </button>
                     {isDropdownOpen && (
                         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg">
-                            <div className="flex flex-col gap-0 border-b border-gray-300">
-                                <div className="px-4 pt-2 pb-0 text-gray-800 text-xs">
-                                    {user.data.email}
-                                </div>
-                                <div className="px-4 pb-2 text-gray-800 text-xs font-black">
-                                    {user.data.nome}
-                                </div>
+                                {user.data ? (
+                                    <>
+                                    <div className="flex flex-col gap-0 border-b border-gray-300">
+                                        <div className="px-4 pt-2 pb-0 text-gray-800 text-xs">
+                                            {user.data.email}
+                                        </div>
+                                        <div className="px-4 pb-2 text-gray-800 text-xs font-black">
+                                            {user.data.nome}
+                                        </div>
+                                        <Link href="/dashboard/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                                            Gerenciar Perfis
+                                        </Link>
+                                    </div>
+                                    </>
+                                ) : (
+                                    <Link href="/access" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">
 
-                            </div>
-                            <Link href="/dashboard/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">
-                                Gerenciar Perfis
-                            </Link>
+                                        Fazer Login
+                                    </Link>
+                                )}
                         </div>
                     )}
                 </div>
