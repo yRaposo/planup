@@ -66,7 +66,7 @@ export default function ProductPage() {
                 for (const account of accounts) {
                     if (account.token) {
                         try {
-                            const data = await getProductsQ(1, 100, account.token, product.codigo);
+                            const data = await getProductsQ(1, 1, account.token, product.codigo);
                             const newProducts = data.data.filter(newProduct =>
                                 !productsData.some(existingProduct => existingProduct.codigo === newProduct.codigo)
                             );
@@ -106,7 +106,11 @@ export default function ProductPage() {
     }, [id, token]);
 
     if (!product) {
-        return <div>Produto não encontrado</div>;
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="animate-pulse rounded-full h-12 w-12 bg-gray-400"></div>
+            </div>
+        )
     }
 
     return (
