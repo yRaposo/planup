@@ -11,7 +11,7 @@ import LaunchModal from '@/components/LaunchModal';
 import StylezedBtn from '@/components/StylezedBtn';
 import { AuthContext } from '@/context/AuthContext';
 import EditModal from '@/components/EditModal';
-import { getEstoqueQ, getProductByIdQ, getProductsQ, getUserQ } from '@/utils/requestQueue';
+import { getDepositoByIdQ, getEstoqueQ, getProductByIdQ, getProductsQ, getUserQ } from '@/utils/requestQueue';
 import Product from '@/components/Product';
 
 export default function ProductPage() {
@@ -20,9 +20,12 @@ export default function ProductPage() {
     const { token, accounts } = useContext(AuthContext);
     const [product, setProduct] = useState(null);
     const [allProducts, setAllProducts] = useState([]);
+    const [users, setUsers] = useState([]);
     const [modal, setModal] = useState('');
     const [estoque, setEstoque] = useState([]);
     const [productAccounts, setProductAccounts] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [deposits, setDeposits] = useState({});
 
     useEffect(() => {
         if (token) {
@@ -45,12 +48,13 @@ export default function ProductPage() {
                         try {
                             const data = await getProductsQ(1, 1, account.token, product.codigo);
                             const newProducts = data.data.filter(newProduct =>
-                                !productsData.some(existingProduct => existingProduct.nome === newProduct.nome)
+                                newProduct.codigo === product.codigo &&
+                                !productsData.some(existingProduct => existingProduct.id === newProduct.id)
                             );
                             productsData.push(...newProducts);
 
                             if (newProducts.length > 0) {
-                                accountsWithProduct[account.email] = newProducts;
+                                accountsWithProduct[account.token] = newProducts
                             }
 
                             console.log('produto: ', data);
@@ -67,10 +71,6 @@ export default function ProductPage() {
         }
     }, [product, accounts]);
 
-    console.log('Produtos: ', allProducts);
-    console.log('Produto: ', product);
-    console.log('Contas com produto: ', productAccounts);
-
     useEffect(() => {
         if (token) {
             getEstoqueQ(id, token).then((data) => {
@@ -81,6 +81,43 @@ export default function ProductPage() {
             });
         }
     }, [id, token]);
+
+    useEffect(() => {
+        if (productAccounts) {
+            const fetchDeposits = async () => {
+                const depositsPerAccountData = [];
+                for (const accountToken of Object.keys(productAccounts)) {
+                    const estoqueData = [];
+                    const depositsData = [];
+
+                    for (const product of productAccounts[accountToken]) {
+                        
+                        try {
+                            const data = await getEstoqueQ(product.id, accountToken);
+                            estoqueData.push(...data.data[0].depositos);
+                        } catch (error) {
+                            console.error('Erro ao obter estoques:', error);
+                        }
+                    }
+                    
+                    for (const deposit of estoqueData) {
+                        const data = await getDepositoByIdQ(deposit.id, accountToken);
+                        depositsData.push(data.data);
+                        console.log('deposito: ', data);
+                    }
+                    depositsPerAccountData[accountToken] = depositsData;
+                }
+                setDeposits(depositsPerAccountData);
+            };
+
+            fetchDeposits();
+        }
+    }, [productAccounts]);
+
+    console.log('Produtos: ', allProducts);
+    console.log('Produto: ', product);
+    console.log('Contas com produto: ', productAccounts);
+    console.log('Depósitos: ', deposits);
 
     if (!product) {
         return (
@@ -103,16 +140,16 @@ export default function ProductPage() {
             </div>
 
             <ul>
-                {Object.keys(productAccounts).map(accountEmail => (
-                    <li key={accountEmail}>
-                        {productAccounts[accountEmail].map(p => (
-                            <Product key={p.codigo} product={p} account={accountEmail} />
+                {Object.keys(productAccounts).map(accountToken => (
+                    <li key={accountToken}>
+                        {productAccounts[accountToken].map(p => (
+                            <Product key={p.codigo} product={p} account={accountToken} />
                         ))}
                     </li>
                 ))}
             </ul>
 
-            <LaunchModal token={token} depositos={estoque.depositos} id={id} sku={product.codigo} isOpen={modal === 'launch'} onClose={() => setModal('')} />
+            <LaunchModal account={deposits} id={id} sku={product.codigo} isOpen={modal === 'launch'} onClose={() => setModal('')} />
 
             <EditModal token={token} depositos={estoque.depositos} id={id} sku={product.codigo} isOpen={modal === 'edit'} onClose={() => setModal('')} />
         </div>

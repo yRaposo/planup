@@ -8,7 +8,7 @@ import { getDepositoById } from "@/service/depositoService";
 import { CgSpinner } from "react-icons/cg";
 import { getDepositoByIdQ } from "@/utils/requestQueue";
 
-export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos }) {
+export default function LaunchModal({ isOpen, onClose, id, sku, account }) {
     const [launchType, setLaunchType] = useState('B');
     const [price, setPrice] = useState(0);
     const [cost, setCost] = useState(0);
@@ -26,20 +26,8 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
     const [isLaunchTypeEmpty, setIsLaunchTypeEmpty] = useState(false);
     const [isQuantityEmpty, setIsQuantityEmpty] = useState(false);
 
-    useEffect(() => {
-        const fetchDepositosData = async () => {
-            if (token && Array.isArray(depositos)) {
-                const data = await Promise.all(depositos.map(async (dep) => {
-                    return await getDepositoByIdQ(dep.id, token);
-                }));
-                setDepositosData(data);
-            }
-        };
 
-        fetchDepositosData();
-    }, [token, depositos]);
-
-    console.log('Depositos:', depositosData);
+    console.log('Depos:', account);
 
     if (!isOpen) return null;
 
@@ -135,7 +123,19 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
                         <option value="S">Saída</option>
                     </select>
 
-                    <label className="text-sm">Deposito</label>
+                    <label className="text-sm">Depósito</label>
+                    {Object.keys(account).map(accountToken => (
+                        <div key={accountToken}>
+                            <h3>Conta: {accountToken}</h3>
+                            <select value={deposito} onChange={handleDepositoChange} className={`w-full p-2 mt-2 border rounded-full appearance-none ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
+                                <option value="" disabled hidden>Selecione um depósito</option>
+                                {account[accountToken].map((dep) => {
+                                    <option key={dep.id} value={dep.id}>{dep.nome}</option>
+                           })}
+                            </select>
+                        </div>
+                    ))}
+
                     <select value={deposito} onChange={handleDepositoChange} className={`w-full p-2 mt-2 border  rounded-full appearance-none" + ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
                         <option value="" disabled hidden>Selecione um depósito</option>
                         {depositosData.map((dep) => (

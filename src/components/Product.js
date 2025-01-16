@@ -1,8 +1,21 @@
+import { getUserQ } from "@/utils/requestQueue";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { FaMountainSun } from "react-icons/fa6";
 import { MdAccountCircle } from "react-icons/md";
 
 export default function Product({ product, account }) {
+
+    const [user, setUser] = useState([]); 
+
+    useEffect(() => {
+        if(account) {
+            getUserQ(account)
+                .then((data) => {
+                    setUser(data.data);
+                })
+        }
+    })
 
     if (!product) {
         return <div>Produto não encontrado</div>;
@@ -16,7 +29,7 @@ export default function Product({ product, account }) {
                 <div className=" flex flex-col justify-between align-middle">
                     <div className=" flex flex-row justify-start gap-1 align-middle items-center">
                         <MdAccountCircle className=" text-xl" />
-                        <h1 className="text-md font-thin">{account}</h1>
+                        <h1 className="text-md font-thin">{user.nome}</h1>
                     </div>
                     <h1 className="text-lg font-bold">{product.nome}</h1>
                 </div>
