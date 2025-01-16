@@ -7,6 +7,7 @@ import { truncateText } from "@/utils/truncateText";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/context/AuthContext";
 import { getProductsQ } from "@/utils/requestQueue";
+import { CgSpinner } from "react-icons/cg";
 
 export default function ProductList() {
     const [products, setProducts] = useState([]);
@@ -15,20 +16,25 @@ export default function ProductList() {
     const [sku, setSku] = useState('');
     const [isInputActive, setIsInputActive] = useState(false);
     const [isempty, setIsEmpty] = useState(true);
+    const [isSearching, setIsSearching] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         if (token) {
+            setIsSearching(true);
             getProductsQ(page, 100, token, sku)
                 .then((result) => {
                     if (Array.isArray(result.data)) {
                         setProducts(result.data);
                     } else {
                         console.error('Resposta no formato errado:', result);
+                        
                     }
                 })
                 .catch((error) => {
                     console.error('Erro ao obter Produtos:',error);
+                }).finally(() => {
+                    setIsSearching(false);
                 });
         }
     }, [token, page, sku]);
@@ -63,7 +69,11 @@ export default function ProductList() {
                 <div className={`flex border-2 border-gray-300 rounded-3xl p-2 w-full mt-5 justify-around ${isInputActive ? 'border-gray-800' : 'border-gray-300'}`}>
                     <input type="text" className="w-full outline-none" placeholder="Digite o SKU do produto" value={sku} onChange={handleInputChange} onFocus={handleInputFocus}
                         onBlur={handleInputBlur} />
-                    {isempty ? null : (
+                    { isSearching ? (
+                        <div className="text-white rounded-xl align-middle items-center justify-center">
+                            <CgSpinner color="#000" size="20" className="animate-spin" />
+                        </div>
+                    ) : isempty ? null : (
                         <button className="text-white rounded-xl align-middle items-center" onClick={() => {
                             setSku('');
                             setIsEmpty(true);
