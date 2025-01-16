@@ -13,7 +13,7 @@ export default function Products() {
         if (!token && accounts === null || !token && accounts.length === 0 || !token && accounts === undefined) {
             router.push('/');
         }
-    }, [token, router]);
+    }, [token, router, accounts]);
 
     return (
         <div className="m-4 flex justify-between align-middle">
