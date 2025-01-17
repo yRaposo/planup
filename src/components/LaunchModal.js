@@ -1,6 +1,7 @@
 'use client'
-import { MdLaunch, MdClose } from "react-icons/md";
+import { MdArrowBackIos, MdLaunch, MdClose } from "react-icons/md";
 import StylezedBtn from "./StylezedBtn";
+import { useState } from "react";
 import { CgSpinner } from "react-icons/cg";
 import { postEstoqueQ } from "@/utils/requestQueue";
 
