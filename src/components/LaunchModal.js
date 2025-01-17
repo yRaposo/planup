@@ -1,13 +1,8 @@
 'use client'
-import { MdArrowBackIos, MdLaunch, MdClose } from "react-icons/md";
+import { MdLaunch, MdClose } from "react-icons/md";
 import StylezedBtn from "./StylezedBtn";
-import { useContext, useState } from "react";
-import { postEstoque } from "@/service/estoqueService";
-import { useEffect } from "react";
-import { getDepositoById } from "@/service/depositoService";
 import { CgSpinner } from "react-icons/cg";
-import { getDepositoByIdQ, postEstoqueQ } from "@/utils/requestQueue";
-import { AuthContext } from "@/context/AuthContext";
+import { postEstoqueQ } from "@/utils/requestQueue";
 
 export default function LaunchModal({ accounts, productAccounts, isOpen, onClose, deposits }) {
     const [launchType, setLaunchType] = useState('B');
