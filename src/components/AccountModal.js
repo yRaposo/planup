@@ -12,7 +12,7 @@ const AccountModal = ({ isOpen, onClose, account, isPrimary }) => {
     const { removeAccount, setAsPrimaryAccount } = useContext(AuthContext);
 
     useEffect(() => {
-        if (account) {
+        if (account?.token) {
             setLoading(true);
             getUserQ(account.token)
                 .then((data) => {

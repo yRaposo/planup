@@ -14,26 +14,40 @@ function AccessContent() {
   const [newRefreshToken, setNewRefreshToken] = useState(null);
   const { token, setToken, setRefreshToken, addAccount, isError, setIsError } = useContext(AuthContext);
   const [code, setCode] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [state, setState] = useState('');
 
   useEffect(() => {
-    if (newToken && newRefreshToken && userEmail) {
-      if (!token) {
+    if (newToken && newRefreshToken && newUserEmail) {
+      if (!token || userEmail === newUserEmail) {
         setToken(newToken);
         setRefreshToken(newRefreshToken);
-        addAccount(newToken, newRefreshToken, userEmail);
+        addAccount(newToken, newRefreshToken, newUserEmail);
         router.push('/dashboard');
       } else {
-        addAccount(newToken, newRefreshToken, userEmail);
+        addAccount(newToken, newRefreshToken, newUserEmail);
         router.push('/dashboard/profile');
       }
+
     }
-  }, [newToken, newRefreshToken, userEmail]);
+  }, [newToken, newRefreshToken, newUserEmail, token, userEmail]);
 
   useEffect(() => {
     if (newToken) {
       getUserQ(newToken)
+        .then((data) => {
+          setNewUserEmail(data.data.email);
+        })
+        .catch((error) => {
+          console.error('Erro ao obter Usuario:', error);
+        });
+    }
+  }, [newToken]);
+
+  useEffect(() => {
+    if (token) {
+      getUserQ(token)
         .then((data) => {
           setUserEmail(data.data.email);
         })
@@ -41,7 +55,7 @@ function AccessContent() {
           console.error('Erro ao obter Usuario:', error);
         });
     }
-  }, [newToken]);
+  }, [token]);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -68,6 +82,7 @@ function AccessContent() {
         .catch((error) => {
           console.error('Erro ao obter Token', error);
           setIsError(true);
+          router.push('/access');
         });
     }
   }, [code]);

@@ -1,15 +1,17 @@
 'use client'
 import { MdArrowBackIos, MdLaunch, MdClose } from "react-icons/md";
 import StylezedBtn from "./StylezedBtn";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { postEstoque } from "@/service/estoqueService";
 import { useEffect } from "react";
 import { getDepositoById } from "@/service/depositoService";
 import { CgSpinner } from "react-icons/cg";
-import { getDepositoByIdQ } from "@/utils/requestQueue";
+import { getDepositoByIdQ, postEstoqueQ } from "@/utils/requestQueue";
+import { AuthContext } from "@/context/AuthContext";
 
-export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos }) {
+export default function LaunchModal({ accounts, productAccounts, isOpen, onClose, deposits }) {
     const [launchType, setLaunchType] = useState('B');
+    const [selectedDeposits, setSelectedDeposits] = useState({});
     const [price, setPrice] = useState(0);
     const [cost, setCost] = useState(0);
     const [quantity, setQuantity] = useState(0);
@@ -17,7 +19,6 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
     const [isError, setIsError] = useState(false);
     const [errorType, setErrorType] = useState('');
     const [deposito, setDeposito] = useState('');
-    const [depositosData, setDepositosData] = useState([]);
     const [isProcessing, setIsProcessing] = useState(false);
 
     const [isIdEmpty, setIsIdEmpty] = useState(false);
@@ -26,20 +27,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
     const [isLaunchTypeEmpty, setIsLaunchTypeEmpty] = useState(false);
     const [isQuantityEmpty, setIsQuantityEmpty] = useState(false);
 
-    useEffect(() => {
-        const fetchDepositosData = async () => {
-            if (token && Array.isArray(depositos)) {
-                const data = await Promise.all(depositos.map(async (dep) => {
-                    return await getDepositoByIdQ(dep.id, token);
-                }));
-                setDepositosData(data);
-            }
-        };
-
-        fetchDepositosData();
-    }, [token, depositos]);
-
-    console.log('Depositos:', depositosData);
+    console.log('Depos:', deposits);
 
     if (!isOpen) return null;
 
@@ -48,51 +36,59 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
         setIsError(false);
     };
 
-    const handleDepositoChange = (event) => {
-        console.log(event.target.value);
-        setDeposito(event.target.value);
+    const handleDepositoChange = (accountToken, event) => {
+        const newSelectedDeposits = { ...selectedDeposits, [accountToken]: event.target.value };
+        setSelectedDeposits(newSelectedDeposits); // Atualiza o estado com o depósito selecionado para a conta
         setIsError(false);
+        console.log('Depositoaaaaaaaaaaa:', newSelectedDeposits);
+        console.log('Depositos selecionados:', selectedDeposits);
     };
 
     const handleSubmit = async () => {
-
-        setIsIdEmpty(!id);
-        setIsSkuEmpty(!sku);
-        setIsDepositoEmpty(!deposito);
+        setIsIdEmpty(Object.keys(productAccounts).some(accountToken => !productAccounts[accountToken].some(product => product.id)));
+        setIsSkuEmpty(Object.keys(productAccounts).some(accountToken => !productAccounts[accountToken].some(product => product.codigo)));
+        setIsDepositoEmpty(Object.values(selectedDeposits).some(deposito => !deposito));
         setIsQuantityEmpty(!quantity);
 
-
-        if (!id || !sku || !deposito || !launchType || launchType !== 'B' && !quantity) {
+        if (Object.keys(productAccounts).some(accountToken => !productAccounts[accountToken].some(product => product.id)) ||
+            Object.keys(productAccounts).some(accountToken => !productAccounts[accountToken].some(product => product.codigo)) ||
+            Object.values(selectedDeposits).some(deposito => !deposito) ||
+            !launchType || (launchType !== 'B' && !quantity)) {
             setIsError(true);
             setErrorType('Preencha todos os campos obrigatórios para realizar o lançamento.');
             return;
         }
 
-        const data = {
-            produto: {
-                id: id,
-                codigo: sku
-            },
-            deposito: {
-                id: parseInt(deposito) // Substitua pelo ID do depósito correto
-            },
-            operacao: launchType,
-            preco: parseFloat(price),
-            custo: parseFloat(cost),
-            quantidade: parseFloat(quantity),
-            observacoes: observations
-        };
-
-        console.log('prédados:', data);
-        console.log('Token:', token);
         setIsProcessing(true);
 
         try {
-            const response = await postEstoque(data, token);
-            console.log('Estoque atualizado com sucesso:', response);
+            const promises = Object.keys(selectedDeposits).map(async (accountToken) => {
+                const product = productAccounts[accountToken].find(product => product.id);
+                const data = {
+                    produto: {
+                        id: product.id,
+                        codigo: product.codigo
+                    },
+                    deposito: {
+                        id: parseInt(selectedDeposits[accountToken]) // Substitua pelo ID do depósito correto
+                    },
+                    operacao: launchType,
+                    preco: parseFloat(price),
+                    custo: parseFloat(cost),
+                    quantidade: parseFloat(quantity),
+                    observacoes: observations
+                };
+
+                console.log('prédados:', data);
+                console.log('Token:', accountToken);
+
+                const response = await postEstoqueQ(data, accountToken);
+                console.log('Estoque atualizado com sucesso:', response);
+            });
+
+            await Promise.all(promises);
             setIsError(false);
-            onClose();
-            setIsProcessing(false);
+            onClose(); // Fechar o modal após o sucesso
         } catch (error) {
             setIsError(true);
 
@@ -118,10 +114,13 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
             }
 
             console.error('Erro ao atualizar estoque:', error);
-            console.error('Resposta:', error.response);
+            if (error.response) {
+                console.error('Resposta:', error.response.data);
+            }
+        } finally {
             setIsProcessing(false);
         }
-    }
+    };
 
     return (
         <div className="fixed overflow-y-auto inset-0 flex items-center justify-center bg-black bg-opacity-50 h-full w-full md:pt-60">
@@ -129,19 +128,36 @@ export default function LaunchModal({ isOpen, onClose, id, sku, token, depositos
                 <div>
                     <h1 className="text-2xl font-bold mt-2">Novo Lançamento</h1>
                     <label className="text-sm">Tipo de Lançamento</label>
-                    <select value={launchType} onChange={handleLaunchTypeChange} className={`w-full p-2 mt-2 border  rounded-full appearance-none" + ${isLaunchTypeEmpty ? 'border-red-800' : 'border-gray-300'}`}>
+                    <select value={launchType} onChange={handleLaunchTypeChange} className={`w-full p-2 mt-2 mb-2 border  rounded-full appearance-none" + ${isLaunchTypeEmpty ? 'border-red-800' : 'border-gray-300'}`}>
                         <option value="E">Entrada</option>
                         <option value="B" selected>Balanço</option>
                         <option value="S">Saída</option>
                     </select>
 
-                    <label className="text-sm">Deposito</label>
-                    <select value={deposito} onChange={handleDepositoChange} className={`w-full p-2 mt-2 border  rounded-full appearance-none" + ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
+                    <label className="text-sm mt-2">Depósito</label>
+                    <div className="border border-gray-300 rounded-xl p-4 mt-2">
+                        {deposits && Object.keys(deposits).map(accountToken => {
+                            const account = accounts.find(acc => acc.token === accountToken);
+                            return (
+                                <div className="mt-2" key={accountToken}>
+                                    <h3>{account ? account.email : 'Conta não encontrada'}</h3>
+                                    <select value={selectedDeposits[accountToken] || ''} onChange={(e) => handleDepositoChange(accountToken, e)} className={`w-full p-2 mt-1 border rounded-full appearance-none ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
+                                        <option value="" disabled hidden>Selecione um depósito</option>
+                                        {deposits[accountToken].map(dep => (
+                                            <option key={dep.id} value={dep.id}>{dep.descricao}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* <select value={deposito} onChange={handleDepositoChange} className={`w-full p-2 mt-2 border  rounded-full appearance-none" + ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
                         <option value="" disabled hidden>Selecione um depósito</option>
                         {depositosData.map((dep) => (
                             <option key={dep.data.id} value={dep.data.id}>{dep.data.descricao}</option>
                         ))}
-                    </select>
+                    </select> */}
                 </div>
 
                 <div className="mt-4">
