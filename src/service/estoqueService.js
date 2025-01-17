@@ -15,7 +15,7 @@ export async function getEstoque(id, token) {
         const response = await blingApi.get('/estoques/saldos', { headers, params })
         return response.data;
     } catch (error) {
-        console.error('Erro ao obter estoque',error);
+        console.error('Erro ao obter estoque', error);
         throw error;
     }
 }
@@ -28,15 +28,19 @@ export async function postEstoque(props, token) {
 
     const data = props;
 
-    console.log('Enviando dados:', data);
-    console.log('data', props);
-    console.log('Token:', token); 
-
     try {
+        console.log('Enviando dados:', data);
+        console.log('data', props);
+        console.log('Token:', token);
         const response = await blingApi.post('/estoques', data, { headers })
+        console.log('response', response.data);
         return response.data;
     } catch (error) {
-        console.error('Erro ao atualizar o estoque',error.response);
+        console.log('Enviando dados:', data);
+        console.log('data', props);
+        console.log('Token:', token);
+        console.error('Erro ao atualizar o estoque', error.response);
+        console.error('Erro ao atualizar o estoque', error);
         throw error;
     }
 }

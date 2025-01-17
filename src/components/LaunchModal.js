@@ -9,8 +9,7 @@ import { CgSpinner } from "react-icons/cg";
 import { getDepositoByIdQ, postEstoqueQ } from "@/utils/requestQueue";
 import { AuthContext } from "@/context/AuthContext";
 
-export default function LaunchModal({ isOpen, onClose, id, sku, account: depositosData }) {
-    const { accounts } = useContext(AuthContext);
+export default function LaunchModal({ accounts, productAccounts, isOpen, onClose, deposits }) {
     const [launchType, setLaunchType] = useState('B');
     const [selectedDeposits, setSelectedDeposits] = useState({});
     const [price, setPrice] = useState(0);
@@ -28,7 +27,7 @@ export default function LaunchModal({ isOpen, onClose, id, sku, account: deposit
     const [isLaunchTypeEmpty, setIsLaunchTypeEmpty] = useState(false);
     const [isQuantityEmpty, setIsQuantityEmpty] = useState(false);
 
-    console.log('Depos:', depositosData);
+    console.log('Depos:', deposits);
 
     if (!isOpen) return null;
 
@@ -46,12 +45,15 @@ export default function LaunchModal({ isOpen, onClose, id, sku, account: deposit
     };
 
     const handleSubmit = async () => {
-        setIsIdEmpty(!id);
-        setIsSkuEmpty(!sku);
+        setIsIdEmpty(Object.keys(productAccounts).some(accountToken => !productAccounts[accountToken].some(product => product.id)));
+        setIsSkuEmpty(Object.keys(productAccounts).some(accountToken => !productAccounts[accountToken].some(product => product.codigo)));
         setIsDepositoEmpty(Object.values(selectedDeposits).some(deposito => !deposito));
         setIsQuantityEmpty(!quantity);
 
-        if (!id || !sku || Object.values(selectedDeposits).some(deposito => !deposito) || !launchType || (launchType !== 'B' && !quantity)) {
+        if (Object.keys(productAccounts).some(accountToken => !productAccounts[accountToken].some(product => product.id)) ||
+            Object.keys(productAccounts).some(accountToken => !productAccounts[accountToken].some(product => product.codigo)) ||
+            Object.values(selectedDeposits).some(deposito => !deposito) ||
+            !launchType || (launchType !== 'B' && !quantity)) {
             setIsError(true);
             setErrorType('Preencha todos os campos obrigatórios para realizar o lançamento.');
             return;
@@ -61,10 +63,11 @@ export default function LaunchModal({ isOpen, onClose, id, sku, account: deposit
 
         try {
             const promises = Object.keys(selectedDeposits).map(async (accountToken) => {
+                const product = productAccounts[accountToken].find(product => product.id);
                 const data = {
                     produto: {
-                        id: id,
-                        codigo: sku
+                        id: product.id,
+                        codigo: product.codigo
                     },
                     deposito: {
                         id: parseInt(selectedDeposits[accountToken]) // Substitua pelo ID do depósito correto
@@ -133,14 +136,14 @@ export default function LaunchModal({ isOpen, onClose, id, sku, account: deposit
 
                     <label className="text-sm mt-2">Depósito</label>
                     <div className="border border-gray-300 rounded-xl p-4 mt-2">
-                        {depositosData && Object.keys(depositosData).map(accountToken => {
+                        {deposits && Object.keys(deposits).map(accountToken => {
                             const account = accounts.find(acc => acc.token === accountToken);
                             return (
-                                <div className="" key={accountToken}>
+                                <div className="mt-2" key={accountToken}>
                                     <h3>{account ? account.email : 'Conta não encontrada'}</h3>
                                     <select value={selectedDeposits[accountToken] || ''} onChange={(e) => handleDepositoChange(accountToken, e)} className={`w-full p-2 mt-1 border rounded-full appearance-none ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
                                         <option value="" disabled hidden>Selecione um depósito</option>
-                                        {depositosData[accountToken].map(dep => (
+                                        {deposits[accountToken].map(dep => (
                                             <option key={dep.id} value={dep.id}>{dep.descricao}</option>
                                         ))}
                                     </select>

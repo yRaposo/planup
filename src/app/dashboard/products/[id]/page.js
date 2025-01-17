@@ -91,7 +91,7 @@ export default function ProductPage() {
                     const depositsData = [];
 
                     for (const product of productAccounts[accountToken]) {
-                        
+
                         try {
                             const data = await getEstoqueQ(product.id, accountToken);
                             estoqueData.push(...data.data[0].depositos);
@@ -99,7 +99,7 @@ export default function ProductPage() {
                             console.error('Erro ao obter estoques:', error);
                         }
                     }
-                    
+
                     for (const deposit of estoqueData) {
                         const data = await getDepositoByIdQ(deposit.id, accountToken);
                         depositsData.push(data.data);
@@ -149,7 +149,7 @@ export default function ProductPage() {
                 ))}
             </ul>
 
-            <LaunchModal account={deposits} id={id} sku={product.codigo} isOpen={modal === 'launch'} onClose={() => setModal('')} />
+            <LaunchModal accounts={accounts} productAccounts={productAccounts} deposits={deposits} id={id} sku={product.codigo} isOpen={modal === 'launch'} onClose={() => setModal('')} />
 
             <EditModal token={token} depositos={estoque.depositos} id={id} sku={product.codigo} isOpen={modal === 'edit'} onClose={() => setModal('')} />
         </div>
