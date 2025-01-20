@@ -147,13 +147,7 @@ export default function LaunchModal({ accounts, productAccounts, isOpen, onClose
                             );
                         })}
                     </div>
-
-                    {/* <select value={deposito} onChange={handleDepositoChange} className={`w-full p-2 mt-2 border  rounded-full appearance-none" + ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
-                        <option value="" disabled hidden>Selecione um depósito</option>
-                        {depositosData.map((dep) => (
-                            <option key={dep.data.id} value={dep.data.id}>{dep.data.descricao}</option>
-                        ))}
-                    </select> */}
+                    
                 </div>
 
                 <div className="mt-4">
