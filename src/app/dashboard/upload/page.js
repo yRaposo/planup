@@ -10,9 +10,11 @@ import { MdLaunch } from 'react-icons/md';
 import { CgSpinner } from 'react-icons/cg';
 import { AuthContext } from '@/context/AuthContext';
 import { getProductsQ } from '@/utils/requestQueue';
+import { getDepositos } from '@/service/depositoService';
+import { FaListCheck } from 'react-icons/fa6';
 
 export default function Upload() {
-    const { token, accounts } = useContext(AuthContext);
+    const { accounts } = useContext(AuthContext);
     const [allProducts, setAllProducts] = React.useState([]);
     const [productAccounts, setProductAccounts] = React.useState({});
     const [fileName, setFileName] = React.useState(null);
@@ -23,9 +25,11 @@ export default function Upload() {
     const [deposits, setDeposits] = React.useState({});
     const [selectedDeposits, setSelectedDeposits] = React.useState({});
     const [isDepositoEmpty, setIsDepositoEmpty] = React.useState(false);
+    const [isError, setIsError] = React.useState(false);
+    const [verifyedProducts, setVerifyedProducts] = React.useState([]);
+    const [isCheking, setIsCheking] = React.useState(false);
 
-
-    const onDrop = useCallback(acceptedFiles => {
+    const onDrop = useCallback((acceptedFiles) => {
         if (acceptedFiles.length > 0) {
             const file = acceptedFiles[0];
             if (file.type !== 'text/csv') {
@@ -38,7 +42,7 @@ export default function Upload() {
                 Papa.parse(file, {
                     header: true,
                     complete: (results) => {
-                        setFile(results.data, accounts);
+                        setFile(results.data);
                     }, error: (error) => {
                         setFileError('Erro ao ler o arquivo');
                         console.error(error);
@@ -56,73 +60,78 @@ export default function Upload() {
         maxFiles: 1
     });
 
-    const fetchProducts = useCallback(async (codigo, accounts) => {
-        if (codigo) {
-            const productsData = [];
-            const accountsWithProduct = {};
-            for (const account of accounts) {
-                if (account.token) {
-                    try {
-                        const data = await getProductsQ(1, 1, account.token, codigo);
-                        const newProducts = data.data.filter(newProduct =>
-                            newProduct.codigo === codigo &&
-                            !productsData.some(existingProduct => existingProduct.id === newProduct.id)
-                        );
-                        productsData.push(...newProducts);
-
-                        if (newProducts.length > 0) {
-                            accountsWithProduct[account.token] = newProducts;
-                        }
-
-                        console.log('produto: ', data);
-                    } catch (error) {
-                        console.error('Erro ao obter produtos:', error);
-                    }
-                }
-            }
-            setAllProducts(productsData);
-            setProductAccounts(accountsWithProduct);
-        }
-    }, []);
-
     const fetchDeposits = useCallback(async () => {
-        if (productAccounts) {
-            const depositsPerAccountData = {};
-            for (const accountToken of Object.keys(productAccounts)) {
-                const estoqueData = [];
-                const depositsData = [];
-
-                for (const product of productAccounts[accountToken]) {
-                    try {
-                        const data = await getEstoqueQ(product.id, accountToken);
-                        estoqueData.push(...data.data[0].depositos);
-                    } catch (error) {
-                        console.error('Erro ao obter estoques:', error);
-                    }
-                }
-
-                for (const deposit of estoqueData) {
-                    try {
-                        const data = await getDepositoByIdQ(deposit.id, accountToken);
-                        depositsData.push(data.data);
-                        console.log('deposito: ', data);
-                    } catch (error) {
-                        console.error('Erro ao obter depósitos:', error);
-                    }
-                }
-                depositsPerAccountData[accountToken] = depositsData;
+        const newDeposits = [];
+        for (const account of accounts) {
+            if (account.token) {
+                await getDepositos(account.token).then(data => {
+                    newDeposits[account.token] = data.data;
+                    console.log('Depósitos:', data);
+                }).catch(error => {
+                    console.error('Erro ao obter depósitos:', error);
+                });
             }
-            setDeposits(depositsPerAccountData);
         }
-    }, [productAccounts]);
+        setDeposits(newDeposits);
+        console.log('Depósitos:', newDeposits);
+    }, [accounts]);
 
     useEffect(() => {
         fetchDeposits();
     }, [fetchDeposits]);
 
-    const handleSubmit = () => {
-        
+    const fetchProducts = useCallback(async (key, row) => {
+        const newProducts = {};
+        for (const account of accounts) {
+            if (account.token) {
+                try {
+                    const data = await getProductsQ(1, 1, account.token, row.SKU);
+                    console.log('Produto bruto:', data);
+                    const filteredProducts = data.data.filter(newProduct =>
+                        newProduct.codigo.toLowerCase() === row.SKU.toLowerCase() && !newProducts[account.token]?.some(existingProduct => existingProduct.id === newProduct.id)
+                    );
+                    console.log('Produto filtrado:', filteredProducts)
+                    if (filteredProducts.length > 0) {
+                        newProducts[account.token] = filteredProducts.reduce((acc, product) => {
+                            acc[product.id] = product;
+                            return acc;
+                        }, {});
+                        console.log('Resultado', { [key]: newProducts });
+                        return newProducts;
+                    }
+                } catch (error) {
+                    console.error('Erro ao obter produtos:', error);
+                }
+            }
+        }
+        return null;
+    }, [accounts]);
+
+    const handleVerify = async () => {
+        setIsCheking(true);
+        const newVerifyedProducts = [];
+        await Promise.all(file.map(async (row, index) => {
+            const data = await fetchProducts(index, row);
+            if (data) {
+                newVerifyedProducts.push(data);
+            }
+        }));
+        setVerifyedProducts(newVerifyedProducts);
+        setIsCheking(false);
+        console.log('Produtos verificados:', newVerifyedProducts);
     }
+
+    const handleSubmit = () => {
+        console.log('Produtos verificados:', verifyedProducts);
+    }
+
+    const handleDepositoChange = (accountToken, event) => {
+        const newSelectedDeposits = { ...selectedDeposits, [accountToken]: event.target.value };
+        setSelectedDeposits(newSelectedDeposits); // Atualiza o estado com o depósito selecionado para a conta
+        setIsError(false);
+        console.log('Depositoaaaaaaaaaaa:', newSelectedDeposits);
+        console.log('Depositos selecionados:', selectedDeposits);
+    };
 
     return (
         <div className="mx-4 mb-4 align-middle w-auto flex flex-col justify-center">
@@ -131,8 +140,16 @@ export default function Upload() {
             </div> */}
 
 
-            <div className="flex justify-center w-full">
-                <div  {...getRootProps()} className={`flex border-2 border-gray-300 rounded-xl p-4 cursor-pointer w-full h-52 justify-center items-center hover:bg-gray-100 ${fileError ? ('border-red-800 bg-red-200') : isDragActive ? ('bg-gray-100 border-dashed') : ('')}`}>
+            <div className="flex justify-center w-full mb-4">
+                <div  {...getRootProps()} className={`flex border-2 border-gray-300 rounded-xl p-4 cursor-pointer w-full h-52 justify-center items-center hover:bg-gray-100 
+                ${fileError
+                        ? ('border-red-800 bg-red-200')
+                        : file && file.length > 0
+                            ? ('justify-start h-auto items-start flex-none')
+                            : isDragActive
+                                ? ('bg-gray-100 border-dashed')
+                                : ('')
+                    }`}>
                     <input {...getInputProps()} className="justify-center items-center flex" multiple={false} accept='.csv' />
                     {
                         fileError !== ''
@@ -143,7 +160,7 @@ export default function Upload() {
                                 </p>
                             </div>
                             : fileName
-                                ? <div className='flex flex-col justify-center items-center'>
+                                ? <div className='flex flex-row justify-start items-center'>
                                     <IoIosDocument size={32} color='#000' />
                                     <p className='text-center font-bold'>
                                         {fileName}
@@ -168,13 +185,13 @@ export default function Upload() {
             {file.length > 0 && (
                 <>
                     <label className="text-sm mt-2">Depósito</label>
-                    <div className="border border-gray-300 rounded-xl p-4 mt-2">
+                    <div className="border-2 border-gray-300 rounded-xl p-4 mt-2 flex flex-col gap-2">
                         {deposits && Object.keys(deposits).map(accountToken => {
                             const account = accounts.find(acc => acc.token === accountToken);
                             return (
-                                <div className="mt-2" key={accountToken}>
+                                <div className="" key={accountToken}>
                                     <h3>{account ? account.email : 'Conta não encontrada'}</h3>
-                                    <select value={selectedDeposits[accountToken] || ''} onChange={(e) => handleDepositoChange(accountToken, e)} className={`w-full p-2 mt-1 border rounded-full appearance-none ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
+                                    <select value={selectedDeposits[accountToken] || ''} onChange={(e) => handleDepositoChange(accountToken, e)} className={`w-full p-2 mt-1 border-2 rounded-full appearance-none ${isDepositoEmpty ? 'border-red-800' : 'border-gray-300'}`}>
                                         <option value="" disabled hidden>Selecione um depósito</option>
                                         {deposits[accountToken].map(dep => (
                                             <option key={dep.id} value={dep.id}>{dep.descricao}</option>
@@ -184,9 +201,11 @@ export default function Upload() {
                             );
                         })}
                     </div>
-                    <div className='flex justify-end mt-4'>
+                    <div className='flex flex-row justify-end mt-4 gap-2'>
+                        <StylezedBtn props={{ icon: isCheking ? (<CgSpinner className="animate-spin" />) : (<FaListCheck />), text: 'Verificar' }} onClick={() => handleVerify()} />
                         <StylezedBtn props={{ icon: isProcessing ? (<CgSpinner className="animate-spin" />) : (<MdLaunch />), text: 'Lançar' }} onClick={() => handleSubmit()} />
                     </div>
+
                     <div className='flex flex-col justify-center items-center mt-4 border-2 border-gray-300 rounded-xl'>
                         <table className="table-auto min-w-full">
                             <thead>
@@ -196,6 +215,9 @@ export default function Upload() {
                                             className='px-4 py-2 font-bold border-b border-gray-200 text-start'>
                                             {key}
                                         </th>))}
+                                    <th className='px-4 py-2 font-bold border-b border-gray-200 text-start'>
+                                        Status
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -206,6 +228,9 @@ export default function Upload() {
                                                 {value}
                                             </td>
                                         ))}
+                                        <td className='py-2 px-4 border-b border-gray-200'>
+                                            <FaListCheck />
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
