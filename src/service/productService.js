@@ -9,7 +9,7 @@ export async function getProducts(pagina, limite, token, sku) {
     const params = {
         'pagina': pagina,
         'limite': limite,
-        'codigos[]': sku ? [sku] : undefined,
+        'codigos[]': sku ? [sku] : '',
     }
 
     try {

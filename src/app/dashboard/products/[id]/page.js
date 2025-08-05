@@ -32,7 +32,7 @@ export default function ProductPage() {
             try {
                 const data = await getProductByIdQ(id, token);
                 setProduct(data.data);
-                console.log(data.data);
+                console.log('Produto: ',data.data);
             } catch (error) {
                 console.error('Erro ao obter o produto por id:', error);
             }

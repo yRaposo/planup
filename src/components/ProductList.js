@@ -22,7 +22,7 @@ export default function ProductList() {
     useEffect(() => {
         if (token) {
             setIsSearching(true);
-            getProductsQ(page, 100, token, sku)
+            getProductsQ(page, 10, token, sku)
                 .then((result) => {
                     if (Array.isArray(result.data)) {
                         setProducts(result.data);
